@@ -2,38 +2,63 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2025 The Linux Foundation
 
-# actions-template
-name: "🛠️ Actions Template"
-description: "Description of action"
-# Any relevant notes/observations can go here
+# tag-validate-semantic-action
+name: "🏷️ Check Tag/Version string is Semantic"
+description: "Validates a given string for conformity to semantic versioning"
 
 inputs:
-  INPUT:
-    description: "Description of input"
-    required: false
+  # Mandatory
+  TAG:
+    description: "Tag/version string to check/verify"
     type: string
-    default: "input"
+    required: true
+  ERROR_ON_FAIL:
+    description: "Exits with error status if semantic check fails"
+    type: boolean
+    required: false
+    default: false
 
 outputs:
-  OUTPUT:
-    description: "Description of output"
-    value: ${{ steps.code.outputs.output }}
+  # Mandatory
+  SEMANTIC:
+    description: "Set true if tag passes semantic versioning check"
+    value: ${{ steps.validate.outputs.semantic }}
 
 runs:
   using: "composite"
   steps:
-    - name: "Friendly Name"
-      id: code
+    - name: "Validate tag/string is semantic"
+      id: validate
       shell: bash
+      # yamllint disable rule:line-length
       run: |
-        # Friendly Name
-        INPUT="${{ inputs.input }}"
-        if [ -z "$INPUT" ]; then
-          echo "Error: mandatory input INPUT was not set/configured ❌"
-          exit 1
+        # Validate tag/string is semantic
+        TAG=${{ inputs.TAG }}
+        ERROR_ON_FAIL=$(echo "${{ inputs.error_on_fail }}" |\
+          tr '[:upper:]' '[:lower:]')
+
+        echo "String to check: $TAG"
+        # Strip leading "v" character if present
+        if [[ "$TAG" == v* ]] || [[ "$TAG" == V* ]]; then
+          TAG="${TAG:1}"
         fi
 
-        echo "output=$INPUT" >> "$GITHUB_ENV"
-        echo "output=$INPUT" >> "$GITHUB_OUTPUT"
-        echo "Action received a valid input: $INPUT ✅"
-        echo "Action received a valid input: $INPUT ✅" >> "$GITHUB_STEP_SUMMARY"
+        # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+        # See: https://regex101.com/r/vkijKf/1/
+        # Use numbered capture groups expression (more compatible)
+        PATTERN="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+
+        # Use grep with PCRE regular expression support
+        CHECKED=$(echo $TAG | grep -P "$PATTERN" || true)
+        if [ "$CHECKED" = "$TAG" ]; then
+          echo "Tag/version string is semantic/valid ✅"
+          echo "semantic=true" >> $GITHUB_ENV
+          echo "semantic=true" >> $GITHUB_OUTPUT
+        else
+          echo "Tag/version string is NOT semantic/valid ❌"
+          echo "semantic=false" >> $GITHUB_ENV
+          echo "semantic=false" >> $GITHUB_OUTPUT
+          if [ "f$ERROR_ON_FAIL" = "ftrue" ]; then
+            exit 1
+          fi
+        fi
