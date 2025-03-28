@@ -1,36 +1,39 @@
 <!--
-# SPDX-License-Identifier: Apache-2.0
-# SPDX-FileCopyrightText: 2025 The Linux Foundation
+SPDX-License-Identifier: Apache-2.0
+SPDX-FileCopyrightText: 2025 The Linux Foundation
 -->
 
-# 🛠️ Template Action
+# 🏷️ Check Tag/Version String is Semantic
 
-This is a template for the other actions in this Github organisation.
+Validates a given string for conformity to semantic versioning.
 
-## actions-template
+Refer to the web site below:
+
+[https://semver.org/](https://semver.org/)
+
+## tag-validate-semantic-action
 
 ## Usage Example
 
-<!-- markdownlint-disable MD046 -->
+Pass the string to check as input to the action:
 
 ```yaml
 steps:
-  - name: "Action template"
-    id: action-template
-    uses: lfreleng-actions/actions-template@main
+  - name: "Check pushed tag is semantic"
+    if: startsWith(github.ref, 'refs/tags/')
+    uses: lfreleng-actions/tag-validate-semantic-action@main
     with:
-      input: "placeholder"
+      tag: ${{ github.ref_name }}
 ```
-
-<!-- markdownlint-enable MD046 -->
 
 ## Inputs
 
 <!-- markdownlint-disable MD013 -->
 
-| Variable Name | Required | Description  |
-| ------------- | -------- | ------------ |
-| INPUT         | False    | Action input |
+| Variable Name | Required | Default   | Description                                     |
+| ------------- | -------- | --------- | ----------------------------------------------- |
+| TAG           | True     | N/A       | Tag/version string to check for validity        |
+| ERROR_ON_FAIL | False    | False     | Exits/aborts with error if semantic check fails |
 
 <!-- markdownlint-enable MD013 -->
 
@@ -38,12 +41,8 @@ steps:
 
 <!-- markdownlint-disable MD013 -->
 
-| Variable Name | Description   |
-| ------------- | ------------- |
-| OUTPUT        | Action output |
+| Variable Name | Mandatory | Description                           |
+| ------------- | --------- | ------------------------------------- |
+| SEMANTIC      | True      | Set to either true/false if semantic  |
 
 <!-- markdownlint-enable MD013 -->
-
-## Implementation Details
-
-## Notes

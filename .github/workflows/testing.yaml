@@ -26,20 +26,19 @@ jobs:
       - name: "Checkout repository"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      # Perform setup prior to running test(s)
-      - name: "Testing setup step"
-        shell: bash
-        run: |
-          # Testing setup step
-          echo "Testing setup step"
-          echo "Testing setup step/summary output" >> "$GITHUB_STEP_SUMMARY"
-
       - name: "Running local action: ${{ github.repository }}"
         uses: ./
+        with:
+          tag: "v1.2.3"
 
-      - name: "Validating local action: ${{ github.repository }}"
-        shell: bash
-        run: |
-          # Local action validation
-          echo "Validating local action: ${{ github.repository }}"
-          echo "Validation step summary output" >> "$GITHUB_STEP_SUMMARY"
+      - name: "Running local action: ${{ github.repository }} [NOT SEMANTIC]"
+        uses: ./
+        with:
+          tag: "v1.not-valid.3.garbage"
+
+      - name: "Running local action: ${{ github.repository }} [OVERRIDE/ERROR]"
+        uses: ./
+        continue-on-error: true
+        with:
+          tag: "v1.not-valid.3.garbage"
+          error_on_fail: true
