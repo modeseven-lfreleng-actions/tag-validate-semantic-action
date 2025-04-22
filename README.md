@@ -33,7 +33,7 @@ steps:
 | Variable Name | Required | Default   | Description                                     |
 | ------------- | -------- | --------- | ----------------------------------------------- |
 | TAG           | True     | N/A       | Tag/version string to check for validity        |
-| ERROR_ON_FAIL | False    | False     | Exits/aborts with error if semantic check fails |
+| EXIT_ON_FAIL  | False    | False     | Exits/aborts with error if semantic check fails |
 
 <!-- markdownlint-enable MD013 -->
 

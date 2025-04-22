@@ -12,7 +12,7 @@ inputs:
     description: "Tag/version string to check/verify"
     type: string
     required: true
-  ERROR_ON_FAIL:
+  EXIT_ON_FAIL:
     description: "Exits with error status if semantic check fails"
     type: boolean
     required: false
@@ -34,7 +34,7 @@ runs:
       run: |
         # Validate tag/string is semantic
         TAG=${{ inputs.TAG }}
-        ERROR_ON_FAIL=$(echo "${{ inputs.error_on_fail }}" |\
+        EXIT_ON_FAIL=$(echo "${{ inputs.exit_on_fail }}" |\
           tr '[:upper:]' '[:lower:]')
 
         echo "String to check: $TAG"
@@ -58,7 +58,7 @@ runs:
           echo "Tag/version string is NOT semantic/valid ❌"
           echo "semantic=false" >> $GITHUB_ENV
           echo "semantic=false" >> $GITHUB_OUTPUT
-          if [ "f$ERROR_ON_FAIL" = "ftrue" ]; then
+          if [ "f$EXIT_ON_FAIL" = "ftrue" ]; then
             exit 1
           fi
         fi
