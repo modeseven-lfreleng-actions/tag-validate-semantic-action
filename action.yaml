@@ -3,62 +3,61 @@
 # SPDX-FileCopyrightText: 2025 The Linux Foundation
 
 # tag-validate-semantic-action
-name: "🏷️ Check Tag/Version string is Semantic"
-description: "Validates a given string for conformity to semantic versioning"
+name: '🏷️ Check Semantic Versioning String/Tag'
+description: 'Validates a given string for conformity to Semantic Versioning'
 
 inputs:
   # Mandatory
-  TAG:
-    description: "Tag/version string to check/verify"
-    type: string
+  string:
+    description: 'Tag/version string to check/verify'
+    type: 'string'
     required: true
-  EXIT_ON_FAIL:
-    description: "Exits with error status if semantic check fails"
-    type: boolean
+  exit_on_fail:
+    description: 'Exits with error status if semantic check fails'
+    type: 'boolean'
     required: false
     default: false
 
 outputs:
   # Mandatory
-  SEMANTIC:
-    description: "Set true if tag passes semantic versioning check"
-    value: ${{ steps.validate.outputs.semantic }}
+  valid:
+    description: 'Set true if tag passes semantic versioning check'
+    value: ${{ steps.validate.outputs.valid }}
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
-    - name: "Validate tag/string is semantic"
+    - name: 'Validate string/tag: SemVer'
       id: validate
       shell: bash
       # yamllint disable rule:line-length
       run: |
-        # Validate tag/string is semantic
-        TAG=${{ inputs.TAG }}
-        EXIT_ON_FAIL=$(echo "${{ inputs.exit_on_fail }}" |\
-          tr '[:upper:]' '[:lower:]')
+        # Validate string/tag: SemVer
+        string=${{ inputs.string }}
+        exit_on_fail="${{ inputs.exit_on_fail }}"
 
-        echo "String to check: $TAG"
+        echo "String to check: $string"
         # Strip leading "v" character if present
-        if [[ "$TAG" == v* ]] || [[ "$TAG" == V* ]]; then
-          TAG="${TAG:1}"
+        if [[ "$string" == v* ]] || [[ "$string" == V* ]]; then
+          string="${string:1}"
         fi
 
         # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
         # See: https://regex101.com/r/vkijKf/1/
         # Use numbered capture groups expression (more compatible)
-        PATTERN="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
+        pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
 
         # Use grep with PCRE regular expression support
-        CHECKED=$(echo $TAG | grep -P "$PATTERN" || true)
-        if [ "$CHECKED" = "$TAG" ]; then
-          echo "Tag/version string is semantic/valid ✅"
-          echo "semantic=true" >> $GITHUB_ENV
-          echo "semantic=true" >> $GITHUB_OUTPUT
+        checked=$(echo $string | grep -P "$pattern" || true)
+        if [ "$checked" = "$string" ]; then
+          echo "Tag/version string is valid SemVer ✅"
+          echo "valid=true" >> $GITHUB_ENV
+          echo "valid=true" >> $GITHUB_OUTPUT
         else
-          echo "Tag/version string is NOT semantic/valid ❌"
-          echo "semantic=false" >> $GITHUB_ENV
-          echo "semantic=false" >> $GITHUB_OUTPUT
-          if [ "f$EXIT_ON_FAIL" = "ftrue" ]; then
+          echo "Tag/version string is NOT valid SemVer ❌"
+          echo "valid=false" >> $GITHUB_ENV
+          echo "valid=false" >> $GITHUB_OUTPUT
+          if [ "f$exit_on_fail" = "ftrue" ]; then
             exit 1
           fi
         fi
