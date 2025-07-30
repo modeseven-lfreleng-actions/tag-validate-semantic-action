@@ -10,11 +10,11 @@ inputs:
   # Mandatory
   string:
     description: 'Tag/version string to check/verify'
-    type: 'string'
+    # type: 'string'
     required: true
   exit_on_fail:
     description: 'Exits with error status if semantic check fails'
-    type: 'boolean'
+    # type: 'boolean'
     required: false
     default: false
 
