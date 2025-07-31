@@ -14,9 +14,9 @@ inputs:
     required: true
   exit_on_fail:
     description: 'Exits with error status if semantic check fails'
-    # type: 'boolean'
+    # type: 'string' (represents a boolean value)
     required: false
-    default: false
+    default: 'false'
 
 outputs:
   # Mandatory
