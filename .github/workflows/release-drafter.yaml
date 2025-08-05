@@ -9,7 +9,6 @@ on:
   push:
     branches:
       - main
-      - master
   # pull_request is required for autolabeler
   pull_request:
     types:
