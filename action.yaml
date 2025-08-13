@@ -21,6 +21,9 @@ outputs:
   valid:
     description: 'Set true if tag passes semantic versioning check'
     value: ${{ steps.validate.outputs.valid }}
+  dev_version:
+    description: 'Set true if tag is a development version'
+    value: ${{ steps.validate.outputs.dev_version }}
 
 runs:
   using: 'composite'
@@ -40,13 +43,22 @@ runs:
           string="${string:1}"
         fi
 
+        # Detect common development/pre-release identifiers and set output
+        dev_version=false
+        if echo "$string" | grep -Eqi '(dev|pre|alpha|beta|rc|snapshot|nightly|canary|preview)'; then
+          dev_version=true
+        fi
+        echo "Development/pre-release detected: $dev_version"
+        echo "dev_version=$dev_version" >> $GITHUB_ENV
+        echo "dev_version=$dev_version" >> $GITHUB_OUTPUT
+
         # https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
         # See: https://regex101.com/r/vkijKf/1/
         # Use numbered capture groups expression (more compatible)
         pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
 
         # Use grep with PCRE regular expression support
-        checked=$(echo $string | grep -P "$pattern" || true)
+        checked=$(echo "$string" | grep -Pi "$pattern" || true)
         if [ "$checked" = "$string" ]; then
           echo "Tag/version string is valid SemVer ✅"
           echo "valid=true" >> $GITHUB_ENV
