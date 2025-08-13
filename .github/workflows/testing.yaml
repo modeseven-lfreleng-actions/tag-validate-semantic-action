@@ -59,3 +59,19 @@ jobs:
           # Error if step above did NOT fail
           echo "Error: previous test step did NOT fail ❌"
           exit 1
+
+      # yamllint disable-line rule:line-length
+      - name: "Running local action: ${{ github.repository }} [Dev tag]"
+        uses: ./
+        id: dev-tag
+        continue-on-error: true
+        with:
+          string: "v1.2.3-dev2"
+
+      - name: "Error if development tag not flagged"
+        if: steps.dev-tag.outputs.dev_version != 'true'
+        shell: bash
+        run: |
+          # Error if development tag not flagged
+          echo "Error: development tag was not flagged ❌"
+          exit 1
