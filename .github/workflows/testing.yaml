@@ -33,30 +33,25 @@ jobs:
       contents: read
     timeout-minutes: 5
     steps:
-      - name: "Checkout repository"
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
       - name: "Running local action: ${{ github.repository }} 1.2.3"
-        uses: ./
+        uses: $/
         with:
           string: "1.2.3"
 
       - name: "Running local action: ${{ github.repository }} v1.2.3"
-        uses: ./
+        uses: $/
         with:
           string: "v1.2.3"
 
       # yamllint disable-line rule:line-length
       - name: "Running local action: ${{ github.repository }} v1.not-valid.3.garbage [NOT SemVer]"
-        uses: ./
+        uses: $/
         with:
           string: "v1.not-valid.3.garbage"
 
       # yamllint disable-line rule:line-length
       - name: "Running local action: ${{ github.repository }} [Override Failure]"
-        uses: ./
+        uses: $/
         id: failure
         continue-on-error: true
         with:
@@ -73,7 +68,7 @@ jobs:
 
       # yamllint disable-line rule:line-length
       - name: "Running local action: ${{ github.repository }} [Dev tag]"
-        uses: ./
+        uses: $/
         id: dev-tag
         continue-on-error: true
         with:
