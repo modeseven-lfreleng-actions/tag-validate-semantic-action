@@ -50,6 +50,36 @@ jobs:
           string: "v1.not-valid.3.garbage"
 
       # yamllint disable-line rule:line-length
+      - name: "Running local action: ${{ github.repository }} 1.2.3-ſ [NOT SemVer]"
+        uses: $/
+        id: non-ascii-pre-release
+        with:
+          string: "1.2.3-ſ"
+
+      - name: "Error if non-ASCII pre-release accepted"
+        if: steps.non-ascii-pre-release.outputs.valid != 'false'
+        shell: bash
+        run: |
+          # Error if non-ASCII pre-release accepted
+          echo "Error: non-ASCII pre-release was accepted as SemVer ❌"
+          exit 1
+
+      # yamllint disable-line rule:line-length
+      - name: "Running local action: ${{ github.repository }} 1.2.3+ſ [NOT SemVer]"
+        uses: $/
+        id: non-ascii-build
+        with:
+          string: "1.2.3+ſ"
+
+      - name: "Error if non-ASCII build metadata accepted"
+        if: steps.non-ascii-build.outputs.valid != 'false'
+        shell: bash
+        run: |
+          # Error if non-ASCII build metadata accepted
+          echo "Error: non-ASCII build metadata was accepted as SemVer ❌"
+          exit 1
+
+      # yamllint disable-line rule:line-length
       - name: "Running local action: ${{ github.repository }} [Override Failure]"
         uses: $/
         id: failure
