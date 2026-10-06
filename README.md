@@ -54,6 +54,9 @@ The RegEx used for semantic compliance is:
 
 `pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"`
 
+The first RegEx runs as `LC_ALL=C grep -P`, a case-sensitive match in the C
+locale, so identifiers must use ASCII letters, as SemVer requires.
+
 The RegEx used for development compliance is:
 
 `pattern="(dev|pre|alpha|beta|rc|snapshot|nightly|canary|preview)"`

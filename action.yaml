@@ -59,8 +59,10 @@ runs:
         # Use numbered capture groups expression (more compatible)
         pattern="^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$"
 
-        # Use grep with PCRE regular expression support
-        checked=$(echo "$string" | grep -Pi "$pattern" || true)
+        # Use grep with PCRE regular expression support. Match case-sensitively
+        # in the C locale: the pattern already lists A-Z and a-z, and caseless
+        # UTF-8 matching folds non-ASCII letters such as U+017F into [a-zA-Z].
+        checked=$(echo "$string" | LC_ALL=C grep -P "$pattern" || true)
         if [ "$checked" = "$string" ]; then
           echo "Tag/version string is valid SemVer ✅"
           echo "valid=true" >> "$GITHUB_OUTPUT"
